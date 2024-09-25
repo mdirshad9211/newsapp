@@ -8,7 +8,6 @@ function NewsApp() {
     const queryInputRef = useRef(null);
 
     async function fetchData(query) {
-        //https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=API_KEY
         const apiURL = `https://newsapi.org/v2/top-headlines?country=us&category=${query}&apiKey=${apiKey}`;
         console.log('Fetching data from URL:', apiURL);
 
@@ -29,32 +28,40 @@ function NewsApp() {
         fetchData(query);
     }, [query]);
 
-
-
     function handleSubmit(event) {
         event.preventDefault();
-        const queryValue = queryInputRef.current.value;
-        console.log('Form submitted with query:', queryValue);
-        setQuery(queryValue);
+        const queryValue = queryInputRef.current.value.trim();
+        if (queryValue) {
+            console.log('Form submitted with query:', queryValue);
+            setQuery(queryValue);
+        }
     }
 
     return (
         <div className="main">
             <h1 className='header'>PERFECT NEWS</h1>
             <form className='form-search' onSubmit={handleSubmit}> 
-                <input className="query-search" type="text" ref={queryInputRef} />
+                <input 
+                    className="query-search" 
+                    type="text" 
+                    placeholder="Enter category (e.g., business, sports)" 
+                    ref={queryInputRef} 
+                />
                 <input className='submit-btn' type="submit" value="Submit" />
             </form>
             <div className='news-main'>
-                {newsList.length === 0 && <p>No news available</p>}
-                {newsList.map((news, index) => (
-                    <div className="news-card" key={index}>
-                        <img src={news.urlToImage} alt={news.title} />
-                        <h2>{news.title}</h2>
-                        <p>{news.description}</p>
-                        <button className='read-more' onClick={() => window.open(news.url)}>Read More</button>
-                    </div>
-                ))}
+                {newsList.length === 0 ? (
+                    <p>No news available</p>
+                ) : (
+                    newsList.map((news, index) => (
+                        <div className="news-card" key={index}>
+                            {news.urlToImage && <img src={news.urlToImage} alt={news.title} />}
+                            <h2>{news.title}</h2>
+                            <p>{news.description ? news.description : 'No description available'}</p>
+                            <button className='read-more' onClick={() => window.open(news.url)}>Read More</button>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );
